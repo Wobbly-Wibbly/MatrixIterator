@@ -35,20 +35,11 @@ class MatrixIterator implements Iterator{
 	private $cachedKeys;
 	private $valid;
 	
-	private $debug;
-	
 	public function __construct()
 	{
 		$this->iterators = [];
 		$this->cachedKeys = [];
 		$this->valid = true;
-		
-		$this->debug = ['next' => 0, 'valid' => 0, 'cache' => 0];
-	}
-	
-	public function getDebug()
-	{
-		return $this->debug;
 	}
 	
 	public function attachIterator(ArrayIterator  $iter)
@@ -72,28 +63,16 @@ class MatrixIterator implements Iterator{
 			return false;
 		}
 		return $this->valid;
-		foreach($this->iterators as $iter)
-		{
-			$this->debug ['valid']++;
-			if(!$iter->valid())
-			{
-				return false;
-			}			
-		}
-		
-		return true;
 	}
 	
 	public function next()
 	{
 		$endKey = count($this->iterators) - 1;
 		$arrayRoot = 0;
-		
 		$this->valid = false;
 		
 		for($current = $endKey; $current >= 0; $current--)
 		{
-			$this->debug ['next']++;
 			$iter = $this->iterators[$current];
 			if($this->nextExists($current))
 			{
@@ -112,7 +91,7 @@ class MatrixIterator implements Iterator{
 			}
 			else
 			{
-				// unreachable
+				throw new Exception('Internal Error case should be unreachable!');
 			}
 		}
 	}
