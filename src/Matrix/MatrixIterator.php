@@ -34,10 +34,19 @@ class MatrixIterator implements Iterator{
 	private $iterators;
 	private $reversedIterators;
 	
+	private $debug;
+	
 	public function __construct()
 	{
 		$this->iterators = [];
 		$this->reversedIterators = [];
+		
+		$this->debug = ['next' => 0, 'valid' => 0, 'nextOffsetExists' => 0];
+	}
+	
+	public function getDebug()
+	{
+		return $this->debug;
 	}
 	
 	public function attachIterator(ArrayIterator  $iter)
@@ -61,6 +70,7 @@ class MatrixIterator implements Iterator{
 		
 		foreach($this->iterators as $iter)
 		{
+			$this->debug ['valid']++;
 			if($iter->valid())
 			{
 				$oneWalid = true;
@@ -80,6 +90,7 @@ class MatrixIterator implements Iterator{
 		
 		foreach($this->reversedIterators as $current => $iter)
 		{
+			$this->debug ['next']++;
 			if($this->nextOffsetExists($iter))
 			{
 				$iter->next();
@@ -150,6 +161,7 @@ class MatrixIterator implements Iterator{
 		$copyedIterator = new ArrayIterator($iterator->getArrayCopy());
 		while($copyedIterator->valid())
 		{
+			$this->debug ['nextOffsetExists']++;
 			if($copyedIterator->key() === $iterator->key())
 			{
 				$currentKeyFound = true;

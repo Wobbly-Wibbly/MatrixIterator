@@ -28,6 +28,35 @@ require_once 'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
 use Matrix\MatrixIterator;
 
+function generate($count)
+{
+	$result = [];
+	for($i = 0; $i < $count; $i++)
+	{
+		$result []= $i;
+	}
+	return $result;
+}
+$bigArray = new ArrayIterator(generate(20));
+$bigArray2 = new ArrayIterator(generate(10));
+$bigArray3 = new ArrayIterator(generate(10));
+
+$bigIterator = new MatrixIterator();
+$bigIterator->attachIterator($bigArray);
+$bigIterator->attachIterator($bigArray2);
+$bigIterator->attachIterator($bigArray3);
+
+$start = time();
+foreach($bigIterator as $key => $value)
+{
+	// do some stuff
+}
+echo 'END: ';
+var_dump($bigIterator->getDebug());
+var_dump(time() - $start);
+die;
+
+
 $ducks = new ArrayIterator(['duck1', 'duck2']);
 $dogs = new ArrayIterator(['dog1', 'dog2', 'dog3']);
 $cats = new ArrayIterator(['cat1', 'cat2', 'cat3', 'cat4']);
