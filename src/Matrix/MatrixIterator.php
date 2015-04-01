@@ -32,15 +32,14 @@ use ArrayIterator;
 class MatrixIterator implements Iterator{
 	
 	private $iterators;
-	private $reversedIterators;
-	private $reversetCachedKeys;
+	private $cachedKeys;
 	
 	private $debug;
 	
 	public function __construct()
 	{
 		$this->iterators = [];
-		$this->reversedIterators = [];
+		$this->cachedKeys = [];
 		
 		$this->debug = ['next' => 0, 'valid' => 0, 'cache' => 0];
 	}
@@ -50,10 +49,15 @@ class MatrixIterator implements Iterator{
 		return $this->debug;
 	}
 	
+	public function getCache()
+	{
+		return $this->cachedKeys;
+	}
+	
 	public function attachIterator(ArrayIterator  $iter)
 	{
 		$this->iterators []= $iter;
-		$this->reverseIterators();
+		$this->cachedKeys = [];
 	}
 	
 	public function rewind()
@@ -87,12 +91,14 @@ class MatrixIterator implements Iterator{
 	
 	public function next()
 	{
-		$arrayRoot = count($this->reversedIterators) - 1;
+		$endKey = count($this->iterators) - 1;
+		$arrayRoot = 0;
 		
-		foreach($this->reversedIterators as $current => $iter)
+		for($current = $endKey; $current >= 0; $current--)
 		{
 			$this->debug ['next']++;
-			if($this->nextReversedOffsetExists($current))
+			$iter = $this->iterators[$current];
+			if($this->nextExists($current))
 			{
 				$iter->next();
 				return;
@@ -155,30 +161,31 @@ class MatrixIterator implements Iterator{
 		return $retval;
 	}
 	
-	private function initReversedCachedKeys($iteratorIndex)
+	private function initCachedKeys($iteratorIndex)
 	{
-		if(!isset($this->reversetCachedKeys[$iteratorIndex]))
+		if(!isset($this->cachedKeys[$iteratorIndex]))
 		{
-			$this->reversetCachedKeys[$iteratorIndex] = [];
-			foreach($this->reversedIterators as $key => $notUsed)
+			$this->cachedKeys[$iteratorIndex] = [];
+			$copy = $this->iterators[$iteratorIndex]->getArrayCopy();
+			foreach($copy as $key => $notUsed)
 			{
 				$this->debug ['cache']++;
-				$this->reversetCachedKeys[$iteratorIndex] []= $key;
+				$this->cachedKeys[$iteratorIndex] []= $key;
 			}
 		}
 	}
 	
-	private function getReversedCachedKeys($iteratorIndex)
+	private function getCachedKeys($offset)
 	{
-		$this->initReversedCachedKeys($iteratorIndex);
-		return $this->reversetCachedKeys[$iteratorIndex];
+		$this->initCachedKeys($offset);
+		return $this->cachedKeys[$offset];
 	}
 	
-	private function nextReversedOffsetExists($iteratorIndex)
+	private function nextExists($offset)
 	{
-		$keys = $this->getReversedCachedKeys($iteratorIndex);
-		end($keys);
-		if(key($keys) === $this->reversedIterators[$iteratorIndex]->key())
+		$keys = $this->getCachedKeys($offset);
+		end($keys);		
+		if(key($keys) === $this->iterators[$offset]->key())
 		{
 			return false;
 		}

@@ -65,11 +65,13 @@ $iterator->attachIterator($ducks);
 $iterator->attachIterator($dogs);
 $iterator->attachIterator($cats);
 
+
 foreach($iterator as $key => $value)
 {
 	echo (implode(' | ', $value));
 	echo '<br/>';
 }
+var_dump($iterator->getCache());
 
 foreach($iterator as $key => $value)
 {
