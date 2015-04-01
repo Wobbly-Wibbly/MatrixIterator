@@ -38,7 +38,7 @@ function generate($count)
 	return $result;
 }
 $bigArray = new ArrayIterator(generate(20));
-$bigArray2 = new ArrayIterator(generate(10));
+$bigArray2 = new ArrayIterator(generate(20));
 $bigArray3 = new ArrayIterator(generate(10));
 
 $bigIterator = new MatrixIterator();
@@ -54,7 +54,6 @@ foreach($bigIterator as $key => $value)
 echo 'END: ';
 var_dump($bigIterator->getDebug());
 var_dump(time() - $start);
-die;
 
 
 $ducks = new ArrayIterator(['duck1', 'duck2']);
@@ -68,7 +67,7 @@ $iterator->attachIterator($cats);
 
 foreach($iterator as $key => $value)
 {
-	echo (implode(' | ', $key));
+	echo (implode(' | ', $value));
 	echo '<br/>';
 }
 

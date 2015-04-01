@@ -33,6 +33,7 @@ class MatrixIterator implements Iterator{
 	
 	private $iterators;
 	private $reversedIterators;
+	private $reversetCachedKeys;
 	
 	private $debug;
 	
@@ -41,7 +42,7 @@ class MatrixIterator implements Iterator{
 		$this->iterators = [];
 		$this->reversedIterators = [];
 		
-		$this->debug = ['next' => 0, 'valid' => 0, 'nextOffsetExists' => 0];
+		$this->debug = ['next' => 0, 'valid' => 0, 'cache' => 0];
 	}
 	
 	public function getDebug()
@@ -91,7 +92,7 @@ class MatrixIterator implements Iterator{
 		foreach($this->reversedIterators as $current => $iter)
 		{
 			$this->debug ['next']++;
-			if($this->nextOffsetExists($iter))
+			if($this->nextReversedOffsetExists($current))
 			{
 				$iter->next();
 				return;
@@ -154,28 +155,37 @@ class MatrixIterator implements Iterator{
 		return $retval;
 	}
 	
-	private function nextOffsetExists(ArrayIterator $iterator)
+	private function initReversedCachedKeys($iteratorIndex)
 	{
-		$result = false;
-		$currentKeyFound = false;
-		$copyedIterator = new ArrayIterator($iterator->getArrayCopy());
-		while($copyedIterator->valid())
+		if(!isset($this->reversetCachedKeys[$iteratorIndex]))
 		{
-			$this->debug ['nextOffsetExists']++;
-			if($copyedIterator->key() === $iterator->key())
+			$this->reversetCachedKeys[$iteratorIndex] = [];
+			foreach($this->reversedIterators as $key => $notUsed)
 			{
-				$currentKeyFound = true;
-			}
-			
-			$copyedIterator->next();
-			
-			if($currentKeyFound)
-			{
-				$result = $copyedIterator->valid();
-				break;
+				$this->debug ['cache']++;
+				$this->reversetCachedKeys[$iteratorIndex] []= $key;
 			}
 		}
-		return $result;
+	}
+	
+	private function getReversedCachedKeys($iteratorIndex)
+	{
+		$this->initReversedCachedKeys($iteratorIndex);
+		return $this->reversetCachedKeys[$iteratorIndex];
+	}
+	
+	private function nextReversedOffsetExists($iteratorIndex)
+	{
+		$keys = $this->getReversedCachedKeys($iteratorIndex);
+		end($keys);
+		if(key($keys) === $this->reversedIterators[$iteratorIndex]->key())
+		{
+			return false;
+		}
+		else 
+		{
+			return true;
+		}
 	}
 	
 	private function reverseIterators()
