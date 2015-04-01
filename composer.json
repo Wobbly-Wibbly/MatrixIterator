@@ -1,0 +1,20 @@
+{
+    "name": "semen4eg/MatrixIterator",
+    "description": "Matrix Iterator",
+    "type": "project",
+    "license": "MIT",
+    "keywords": [ "php", "iterator", "matrix" ],
+    "autoload": {
+        "psr-4": { "Matrix\\": "src/Matrix" }
+    },
+    "prefer-stable": true,
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "authors": [
+        {
+            "name": "Semyon Radionov",
+            "email": "simon.radionov@gmail.com"
+        }
+    ]
+}
