@@ -28,6 +28,12 @@ require_once 'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
 use Matrix\MatrixIterator;
 
+$empty = new MatrixIterator();
+foreach($empty as $nullKey => $null)
+{
+	echo 'NULL';
+}
+
 function generate($count)
 {
 	$result = [];
@@ -37,9 +43,9 @@ function generate($count)
 	}
 	return $result;
 }
-$bigArray = new ArrayIterator(generate(20));
+$bigArray = new ArrayIterator(generate(1));
 $bigArray2 = new ArrayIterator(generate(20));
-$bigArray3 = new ArrayIterator(generate(10));
+$bigArray3 = new ArrayIterator(generate(20));
 
 $bigIterator = new MatrixIterator();
 $bigIterator->attachIterator($bigArray);
@@ -47,11 +53,14 @@ $bigIterator->attachIterator($bigArray2);
 $bigIterator->attachIterator($bigArray3);
 
 $start = time();
+$amount = 0;
 foreach($bigIterator as $key => $value)
 {
 	// do some stuff
+	$amount++;
 }
 echo 'END: ';
+echo $amount;
 var_dump($bigIterator->getDebug());
 var_dump(time() - $start);
 
@@ -71,7 +80,6 @@ foreach($iterator as $key => $value)
 	echo (implode(' | ', $value));
 	echo '<br/>';
 }
-var_dump($iterator->getCache());
 
 foreach($iterator as $key => $value)
 {

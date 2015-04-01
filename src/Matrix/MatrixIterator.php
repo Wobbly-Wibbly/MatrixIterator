@@ -33,6 +33,7 @@ class MatrixIterator implements Iterator{
 	
 	private $iterators;
 	private $cachedKeys;
+	private $valid;
 	
 	private $debug;
 	
@@ -40,6 +41,7 @@ class MatrixIterator implements Iterator{
 	{
 		$this->iterators = [];
 		$this->cachedKeys = [];
+		$this->valid = true;
 		
 		$this->debug = ['next' => 0, 'valid' => 0, 'cache' => 0];
 	}
@@ -47,11 +49,6 @@ class MatrixIterator implements Iterator{
 	public function getDebug()
 	{
 		return $this->debug;
-	}
-	
-	public function getCache()
-	{
-		return $this->cachedKeys;
 	}
 	
 	public function attachIterator(ArrayIterator  $iter)
@@ -70,29 +67,29 @@ class MatrixIterator implements Iterator{
 	
 	public function valid()
 	{
-		$allWalid = true;
-		$oneWalid = false;
-		
+		if(!count($this->iterators))
+		{
+			return false;
+		}
+		return $this->valid;
 		foreach($this->iterators as $iter)
 		{
 			$this->debug ['valid']++;
-			if($iter->valid())
+			if(!$iter->valid())
 			{
-				$oneWalid = true;
-			}
-			else
-			{
-				$allWalid = false;
+				return false;
 			}			
 		}
 		
-		return $allWalid;
+		return true;
 	}
 	
 	public function next()
 	{
 		$endKey = count($this->iterators) - 1;
 		$arrayRoot = 0;
+		
+		$this->valid = false;
 		
 		for($current = $endKey; $current >= 0; $current--)
 		{
@@ -101,6 +98,7 @@ class MatrixIterator implements Iterator{
 			if($this->nextExists($current))
 			{
 				$iter->next();
+				$this->valid = true;
 				return;
 			}
 			elseif($current !== $arrayRoot)
@@ -110,6 +108,7 @@ class MatrixIterator implements Iterator{
 			elseif($current === $arrayRoot)
 			{
 				$iter->next();
+				$this->valid = false;
 			}
 			else
 			{
@@ -169,7 +168,6 @@ class MatrixIterator implements Iterator{
 			$copy = $this->iterators[$iteratorIndex]->getArrayCopy();
 			foreach($copy as $key => $notUsed)
 			{
-				$this->debug ['cache']++;
 				$this->cachedKeys[$iteratorIndex] []= $key;
 			}
 		}
@@ -193,10 +191,5 @@ class MatrixIterator implements Iterator{
 		{
 			return true;
 		}
-	}
-	
-	private function reverseIterators()
-	{
-		$this->reversedIterators = array_reverse($this->iterators);
 	}
 }
