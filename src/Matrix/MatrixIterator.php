@@ -32,15 +32,18 @@ use ArrayIterator;
 class MatrixIterator implements Iterator{
 	
 	private $iterators;
+	private $reversedIterators;
 	
 	public function __construct()
 	{
 		$this->iterators = [];
+		$this->reversedIterators = [];
 	}
 	
 	public function attachIterator(ArrayIterator  $iter)
 	{
 		$this->iterators []= $iter;
+		$this->reverseIterators();
 	}
 	
 	public function rewind()
@@ -73,17 +76,28 @@ class MatrixIterator implements Iterator{
 	
 	public function next()
 	{
-		foreach($this->iterators as $iter)
+		$arrayRoot = count($this->reversedIterators) - 1;
+		
+		foreach($this->reversedIterators as $current => $iter)
 		{
 			if($this->nextOffsetExists($iter))
 			{
 				$iter->next();
 				return;
 			}
+			elseif($current !== $arrayRoot)
+			{
+				$iter->rewind();
+			}
+			elseif($current === $arrayRoot)
+			{
+				$iter->next();
+			}
+			else
+			{
+				// unreachable
+			}
 		}
-		
-		// all in the end prevent inf loop debug
-		$iter->next();
 	}
 	
 	public function current()
@@ -150,5 +164,10 @@ class MatrixIterator implements Iterator{
 			}
 		}
 		return $result;
+	}
+	
+	private function reverseIterators()
+	{
+		$this->reversedIterators = array_reverse($this->iterators);
 	}
 }

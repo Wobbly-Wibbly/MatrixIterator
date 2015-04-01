@@ -28,20 +28,23 @@ require_once 'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
 use Matrix\MatrixIterator;
 
-$projects = new ArrayIterator(['main' => 'MainProject', 'sub' => 'SubProject']);
-$cats = new ArrayIterator(['cat1', 'cat2', 'cat3', 'cat4']);
-$dogs = new ArrayIterator(['dog1', 'dog2', 'dog3']);
 $ducks = new ArrayIterator(['duck1', 'duck2']);
-
+$dogs = new ArrayIterator(['dog1', 'dog2', 'dog3']);
+$cats = new ArrayIterator(['cat1', 'cat2', 'cat3', 'cat4']);
 
 $iterator = new MatrixIterator();
-$iterator->attachIterator($projects);
-$iterator->attachIterator($cats);
-$iterator->attachIterator($dogs);
 $iterator->attachIterator($ducks);
+$iterator->attachIterator($dogs);
+$iterator->attachIterator($cats);
 
 foreach($iterator as $key => $value)
 {
-	var_dump($key);
-	//var_dump($value);
+	echo (implode(' | ', $key));
+	echo '<br/>';
+}
+
+foreach($iterator as $key => $value)
+{
+    echo (implode(' | ', $key));
+	echo '<br/>';
 }
