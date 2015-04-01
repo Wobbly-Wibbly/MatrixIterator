@@ -26,6 +26,129 @@
 
 namespace Matrix;
 
-class MatrixIterator{
+use Iterator;
+use ArrayIterator;
+
+class MatrixIterator implements Iterator{
 	
+	private $iterators;
+	
+	public function __construct()
+	{
+		$this->iterators = [];
+	}
+	
+	public function attachIterator(ArrayIterator  $iter)
+	{
+		$this->iterators []= $iter;
+	}
+	
+	public function rewind()
+	{
+		foreach($this->iterators as $iter)
+		{
+			$iter->rewind();
+		}
+	}
+	
+	public function valid()
+	{
+		$allWalid = true;
+		$oneWalid = false;
+		
+		foreach($this->iterators as $iter)
+		{
+			if($iter->valid())
+			{
+				$oneWalid = true;
+			}
+			else
+			{
+				$allWalid = false;
+			}			
+		}
+		
+		return $allWalid;
+	}
+	
+	public function next()
+	{
+		foreach($this->iterators as $iter)
+		{
+			if($this->nextOffsetExists($iter))
+			{
+				$iter->next();
+				return;
+			}
+		}
+		
+		// all in the end prevent inf loop debug
+		$iter->next();
+	}
+	
+	public function current()
+	{
+		$retval = [];
+		
+		foreach($this->iterators as $iter)
+		{
+			if($iter->valid())
+			{
+				$retval []= $iter->current();
+			}
+			else
+			{
+				$retval []= null;
+			}
+		}
+		
+		return $retval;
+	}
+	
+	public function key()
+	{
+		if(!count($this->iterators))
+		{
+			return false;
+		}
+		
+		$retval = [];
+		
+		foreach($this->iterators as $iter)
+		{
+			if($iter->valid())
+			{
+				$retval []= $iter->key();
+			}
+			else
+			{
+				$retval []= null;
+			}
+		}
+		
+		return $retval;
+	}
+	
+	private function nextOffsetExists(ArrayIterator $iterator)
+	{
+		$result = false;
+		$currentKeyFound = false;
+		$copyedIterator = new ArrayIterator($iterator->getArrayCopy());
+		while($copyedIterator->valid())
+		{
+			if($copyedIterator->key() === $iterator->key())
+			{
+				$currentKeyFound = true;
+			}
+			
+			$copyedIterator->next();
+			
+			if($currentKeyFound)
+			{
+				$result = $copyedIterator->valid();
+				break;
+			}
+		}
+		return $result;
+	}
 }
