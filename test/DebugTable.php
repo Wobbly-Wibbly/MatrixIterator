@@ -24,38 +24,74 @@
  * THE SOFTWARE.
  */
 
-require_once 'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
-use Matrix\MatrixIterator;
-use MatrixTest\DebugTable;
-use MatrixTest\MatrixToMap;
+namespace MatrixTest;
 
-$table = new DebugTable();
-
-$ducks = new ArrayIterator(['duck1', 'duck2']);
-$dogs = new ArrayIterator(['dog1', 'dog2', 'dog3']);
-$cats = new ArrayIterator(['cat1', 'cat2', 'cat3', 'cat4']);
-
-$iterator = new MatrixIterator();
-$iterator->attachIterator($ducks);
-$iterator->attachIterator($dogs);
-$iterator->attachIterator($cats);
-
-
-$toMapConversion = new MatrixToMap($iterator);
-
-$map = $toMapConversion->getMap();
-var_dump($map);
-die;
-
-foreach($iterator as $key => $value)
-{
-	echo (implode(' | ', $value));
-	echo '<br/>';
+class DebugTable{
+	
+	protected $width;
+	protected $map;
+	
+	public function construct()
+	{
+		$this->width = 0;
+		$this->map = array();
+	}
+	
+	public function getMap()
+	{
+		return $this->map;
+	}
+	
+	public function displayMap()
+	{
+		$map = $this->getMap();
+		foreach($map as $row)
+		{
+			echo implode(' | ', $row);
+			echo '<br/>';
+		}
+	}
+	
+	public function setValue($row, $column, $value)
+	{
+		$this->initialize($row, $column);
+		
+		$this->map[$row][$column] = $value;
+	}
+	
+	private function isInitialized($row, $column)
+	{
+		if(!isset($this->map[$row]))
+		{
+			return false;
+		}
+		if(!isset($this->map[$row][$column]))
+		{
+			return false;
+		}
+	}
+	
+	private function initialize($row, $column)
+	{
+		if(!isset($this->map[$row]))
+		{
+			$this->map[$row] = array();
+		}
+		if(!isset($this->map[$row][$column]))
+		{
+			if($column > $this->width)
+			{
+				$this->width = $column;
+			}
+			
+			$iCurrentWidth = count($this->map[$row]);
+			
+			for($i = $iCurrentWidth; $i <= $this->width; $i++)
+			{
+				$this->map[$row] [$i] = 'NULL';
+			}
+		}
+	}
 }
 
-foreach($iterator as $key => $value)
-{
-    echo (implode(' | ', $key));
-	echo '<br/>';
-}

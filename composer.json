@@ -5,7 +5,10 @@
     "license": "MIT",
     "keywords": [ "php", "iterator", "matrix" ],
     "autoload": {
-        "psr-4": { "Matrix\\": "src/Matrix" }
+        "psr-4": { 
+            "Matrix\\": "src/Matrix"
+            ,"MatrixTest\\": "test"
+        }
     },
     "prefer-stable": true,
     "require": {
