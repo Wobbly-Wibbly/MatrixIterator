@@ -49,20 +49,47 @@ class MatrixToMap{
 	public function getMap()
 	{
 		$map = new DebugTable();
-		foreach($this->matrix as $key => $value)
+		foreach($this->matrix as $keys => $values)
 		{
-			$offset = $this->getOffsetByMatrixKey($key);
-			$map->setValue($offset[0], $offset[1], implode(':', $value));
-			continue;
-			var_dump($offset);
-			echo (implode(' | ', $key));
-			echo ' => ';
-			echo (implode(':', $value));
-			echo '<br/>';
+            $this->setHeadersToMapByMatrix($map, $keys, $values);
+            $this->setIntersectionToMapByMatrix($map, $keys, $values);
 		}
 		$map->displayMap();
 		return $map;
 	}
+	
+    private function setIntersectionToMapByMatrix(DebugTable $map, $keys, $values)
+    {
+        $offset = $this->getOffsetByMatrixKey($keys);
+		$map->setValue($offset[0], $offset[1], implode(':', $values));
+    }
+    
+    private function setHeadersToMapByMatrix(DebugTable $map, $keys, $values)
+    {
+        foreach($keys as $keyIndex => $indexPosition)
+        {
+            $indexValue = $values[$keyIndex];
+            switch ($keyIndex)
+			{
+				case self::HEADER_TYPE:
+					$headerHeaderPosition = $this->getHeaderPosition($indexPosition);
+					$map->setValue($headerHeaderPosition[0], $headerHeaderPosition[1], $indexValue);
+					break;
+				case self::ROW_TYPE:
+                    
+					$rowHeaderPosition = $this->getRowHeaderPosition($indexPosition);
+					$map->setValue($rowHeaderPosition[0], $rowHeaderPosition[1], $indexValue);
+					break;
+				case self::COLUMN_TYPE:
+					$columnHeaderPosition = $this->getColumnPosition($indexPosition);
+					$map->setValue($columnHeaderPosition[0], $columnHeaderPosition[1], $indexValue);
+					break;
+				default:
+					throw new Exception('Unknown key Index type!');
+					break;
+			}
+        }
+    }
 	
 	private function getOffsetByMatrixKey($key)
 	{
