@@ -50,6 +50,7 @@ class MatrixIterator implements Iterator{
 	
 	public function rewind()
 	{
+		$this->valid = true;
 		foreach($this->iterators as $iter)
 		{
 			$iter->rewind();
